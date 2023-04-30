@@ -3,7 +3,7 @@
 The comments are here for explanation, it's not necessary to translate them.
 -->
 <NotepadPlus>
-    <Native-Langue name="français" filename="french.xml" version="8.5">
+    <Native-Langue name="français" filename="french.xml" version="8.5.1">
         <Menu>
             <Main>
                 <!-- Main Menu Entries -->
@@ -385,8 +385,6 @@ The comments are here for explanation, it's not necessary to translate them.
                     <Item id="11009" name="Taille de grande à petite"/>
                 </Commands>
             </Main>
-            <Splitter>
-            </Splitter>
             <TabBar>
                 <Item CMDID="41003" name="Fermer"/>
                 <Item CMDID="0" name="Fermer plusieurs onglets"/>
@@ -424,6 +422,14 @@ The comments are here for explanation, it's not necessary to translate them.
                 <Item CMDID="44115" name="Appliquer la couleur 5"/>
                 <Item CMDID="44110" name="Enlever la couleur"/>
             </TabBar>
+            <TrayIcon>
+                <Item id="43101" name="Activer"/>
+                <Item id="43102" name="Nouveau"/>
+                <Item id="43103" name="Nouveau et coller"/>
+                <Item id="43104" name="Ouvrir..."/>
+                <Item id="43013" name="Trouver dans les fichiers..."/>
+                <Item id="43105" name="Fermer l'icône de la barre des tâches"/>
+            </TrayIcon>
         </Menu>
 
         <Dialog>
@@ -469,6 +475,11 @@ The comments are here for explanation, it's not necessary to translate them.
                 <Item id="1721" name="▲"/>
                 <Item id="1723" name="▼ Suivant"/>
                 <Item id="1725" name="Copier le texte marqué"/>
+                <Menu>
+                    <Item id="1726" name="⇅ Echanger entre Recherche et Remplacer"/>
+                    <Item id="1727" name="⤵ Copier de Recherche vers Remplacer"/>
+                    <Item id="1728" name="⤴ Copier de Remplacer vers Recherche"/>
+                </Menu>
             </Find>
 
             <IncrementalFind title="">
@@ -1269,7 +1280,12 @@ Vous pouvez définir plusieurs marqueurs de colonne en utilisant un espace pour 
                 <Item id="2033" name="&amp;Nombre à insérer"/>
                 <Item id="2030" name="Nombre &amp;initial :"/>
                 <Item id="2031" name="&amp;Augmenter de :"/>
-                <Item id="2035" name="Nombre de &amp;zéros"/>
+                <Item id="2038" name="Déb&amp;ut de ligne :"/>
+                <ComboBox id="2039">
+                    <Element name="Aucun"/>
+                    <Element name="Zéros"/>
+                    <Element name="Espaces"/>
+                </ComboBox>
                 <Item id="2036" name="&amp;Répéter :"/>
                 <Item id="2032" name="Format"/>
                 <Item id="2024" name="&amp;Déc."/>
@@ -1451,8 +1467,9 @@ Voulez-vous enregistrer vos modifications avant de changer de thème ?"/> <!-- H
             <ColumnVal name="Valeur"/>
             <ColumnHex name="Hexa"/>
             <ColumnChar name="Caractère"/>
-            <ColumnHtmlNumber name="Numéro HTML"/>
             <ColumnHtmlName name="Code HTML"/>
+            <ColumnHtmlNumber name="HTML décimal"/>
+            <ColumnHtmlHexNb name="HTML hexadécimal"/>
         </AsciiInsertion>
         <DocumentMap>
             <PanelTitle name="Plan du Document"/>
@@ -1470,7 +1487,7 @@ Voulez-vous enregistrer vos modifications avant de changer de thème ?"/> <!-- H
             <ExpandAllFoldersTip name="Déplier tous les dossiers"/>
             <CollapseAllFoldersTip name="Replier tous les dossiers"/>
             <LocateCurrentFileTip name="Localiser le fichier courant"/>
-            <Menus>
+            <Menu>
                 <Item id="3511" name="Effacer"/>
                 <Item id="3512" name="Effacer tout"/>
                 <Item id="3513" name="Ajouter"/>
@@ -1481,7 +1498,7 @@ Voulez-vous enregistrer vos modifications avant de changer de thème ?"/> <!-- H
                 <Item id="3518" name="Explorer depuis ici"/>
                 <Item id="3519" name="CMD depuis ici"/>
                 <Item id="3520" name="Copier le nom du fichier"/>
-            </Menus>
+            </Menu>
         </FolderAsWorkspace>
         <ProjectManager>
             <PanelTitle name="Projet"/>
@@ -1611,14 +1628,9 @@ Rechercher dans tous les fichiers mais pas dans les dossiers log ou logs récurs
             <tabrename-newname value="Nom nouveau : "/>
             <splitter-rotate-left value="Tourner vers la gauche"/>
             <splitter-rotate-right value="Tourner vers la droite"/>
-            <recent-file-history-maxfile value="Max. fichier : "/>
-            <recent-file-history-customlength value="Longueur : "/>
-            <language-tabsize value="Taille tabulation : "/>
             <userdefined-title-new value="Langage nouveau..."/>
             <userdefined-title-save value="Enregistrer langage actuel sous..."/>
             <userdefined-title-rename value="Renommer langage actuel"/>
-            <autocomplete-nb-char value="Caractères : "/>
-            <edit-verticaledge-nb-col value="Colonnes : "/>
             <summary value="Statistiques"/>
             <summary-filepath value="Chemin d'accès : "/>
             <summary-filecreatetime value="Date de Création : "/>
@@ -1630,6 +1642,9 @@ Rechercher dans tous les fichiers mais pas dans les dossiers log ou logs récurs
             <summary-nbsel1 value=" caractères sélectionnés ("/>
             <summary-nbsel2 value=" octets) dans "/>
             <summary-nbrange value=" sélections"/>
+            <progress-hits-title value="Résultats :"/>
+            <progress-cancel-button value="Annuler"/>
+            <progress-cancel-info value="Annulation de l'opération, veuillez patienter..."/>
             <find-in-files-progress-title value="Rechercher dans les fichiers en cours..."/>
             <replace-in-files-confirm-title value="Confirmation"/>
             <replace-in-files-confirm-directory value="Voulez-vous remplacer toutes les occurrences dans :"/>

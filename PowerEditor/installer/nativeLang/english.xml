@@ -3,7 +3,7 @@
 The comments are here for explanation, it's not necessary to translate them.
 -->
 <NotepadPlus>
-    <Native-Langue name="English" filename="english.xml" version="8.5">
+    <Native-Langue name="English" filename="english.xml" version="8.5.1">
         <Menu>
             <Main>
                 <!-- Main Menu Entries -->
@@ -296,6 +296,7 @@ The comments are here for explanation, it's not necessary to translate them.
                     <Item id="44114" name="Apply Color 4"/>
                     <Item id="44115" name="Apply Color 5"/>
                     <Item id="44130" name="Show Non-Printing Characters"/>
+                    <Item id="44131" name="Show Control Characters &amp; Unicode EOL"/>
                     <Item id="44032" name="Toggle Full Screen Mode"/>
                     <Item id="44033" name="Restore Default Zoom"/>
                     <Item id="44034" name="Always on Top"/>
@@ -475,6 +476,11 @@ The comments are here for explanation, it's not necessary to translate them.
                 <Item id="1721" name="▲"/>
                 <Item id="1723" name="▼ Find Next"/>
                 <Item id="1725" name="Copy Marked Text"/>
+                <Menu>
+                    <Item id="1726" name="⇅ Swap Find with Replace"/>
+                    <Item id="1727" name="⤵ Copy from Find to Replace"/>
+                    <Item id="1728" name="⤴ Copy from Replace to Find"/>
+                </Menu>
             </Find>
 
             <IncrementalFind title="">
@@ -951,6 +957,7 @@ The comments are here for explanation, it's not necessary to translate them.
                     <Item id="6254" name="Abbreviation"/>
                     <Item id="6255" name="Codepoint"/>
                     <Item id="6256" name="Custom Color"/>
+                    <Item id="6258" name="Apply to C0, C1 &amp; Unicode EOL"/>
                 </Scintillas>
 
                 <DarkMode title="Dark Mode">
@@ -1258,7 +1265,7 @@ You can define several column markers by using white space to separate the diffe
             <MultiMacro title="Run a Macro Multiple Times">
                 <Item id="1" name="&amp;Run"/>
                 <Item id="2" name="&amp;Cancel"/>
-                <Item id="8006" name="Macro to run :"/>
+                <Item id="8006" name="Macro to run"/>
                 <Item id="8001" name="Run"/>
                 <Item id="8005" name="times"/>
                 <Item id="8002" name="Run until the &amp;end of file"/>
@@ -1275,7 +1282,12 @@ You can define several column markers by using white space to separate the diffe
                 <Item id="2033" name="&amp;Number to Insert"/>
                 <Item id="2030" name="&amp;Initial number :"/>
                 <Item id="2031" name="Increase b&amp;y :"/>
-                <Item id="2035" name="Leading &amp;zeros"/>
+                <Item id="2038" name="&amp;Leading :"/>
+                <ComboBox id="2039">
+                    <Element name="None"/>
+                    <Element name="Zeros"/>
+                    <Element name="Spaces"/>
+                </ComboBox>
                 <Item id="2036" name="&amp;Repeat :"/>
                 <Item id="2032" name="Format"/>
                 <Item id="2024" name="&amp;Dec"/>
@@ -1457,8 +1469,9 @@ Do you want to save your changes before switching themes?"/> <!-- HowToReproduce
             <ColumnVal name="Value"/>
             <ColumnHex name="Hex"/>
             <ColumnChar name="Character"/>
-            <ColumnHtmlNumber name="HTML Number"/>
-            <ColumnHtmlName name="HTML Code"/>
+            <ColumnHtmlName name="HTML Name"/>
+            <ColumnHtmlNumber name="HTML Decimal"/>
+            <ColumnHtmlHexNb name="HTML Hexadecimal"/>
         </AsciiInsertion>
         <DocumentMap>
             <PanelTitle name="Document Map"/>
@@ -1476,7 +1489,7 @@ Do you want to save your changes before switching themes?"/> <!-- HowToReproduce
             <ExpandAllFoldersTip name="Unfold all"/>
             <CollapseAllFoldersTip name="Fold all"/>
             <LocateCurrentFileTip name="Locate current file"/>
-            <Menus>
+            <Menu>
                 <Item id="3511" name="Remove"/>
                 <Item id="3512" name="Remove All"/>
                 <Item id="3513" name="Add"/>
@@ -1487,7 +1500,7 @@ Do you want to save your changes before switching themes?"/> <!-- HowToReproduce
                 <Item id="3518" name="Explorer here"/>
                 <Item id="3519" name="CMD here"/>
                 <Item id="3520" name="Copy file name"/>
-            </Menus>
+            </Menu>
         </FolderAsWorkspace>
         <ProjectManager>
             <PanelTitle name="Project"/>
@@ -1631,6 +1644,7 @@ Find in all files but exclude all folders log or logs recursively:
             <summary-nbsel1 value=" selected characters ("/>
             <summary-nbsel2 value=" bytes) in "/>
             <summary-nbrange value=" ranges"/>
+            <progress-hits-title value="Hits:"/>
             <progress-cancel-button value="Cancel"/>
             <progress-cancel-info value="Cancelling operation, please wait..."/>
             <find-in-files-progress-title value="Find In Files progress..."/>
@@ -1671,8 +1685,6 @@ NOTE:
             <npcNote-tip value="Representation of selected &quot;non-ASCII&quot; whitespace and non-printing (control) characters.
 
 NOTE:
-Some characters might already have some representation and are thus visible. Line separator and paragraph separator are already represented by abbreviation by default.
-
 Using representation will disable character effects on text.
 
 For the full list of selected whitespace and non-printing characters check User Manual.
@@ -1695,6 +1707,7 @@ Click on &quot;?&quot; button on right to open website with User Manual." />
 
             <!-- Don't translate "(&quot;Non-printing characters custom color&quot;)" -->
             <npcCustomColor-tip value="Go to Style Configurator to change the default custom color for selected whitespace and non-printing characters (&quot;Non-printing characters custom color&quot;)." />
+            <npcIncludeCcUniEol-tip value="Apply non-printing characters appearance settings to C0, C1 control and Unicode EOL (next line, line separator and paragraph separator) characters." />
         </MiscStrings>
     </Native-Langue>
 </NotepadPlus>

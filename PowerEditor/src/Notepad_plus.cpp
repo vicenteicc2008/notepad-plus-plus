@@ -435,9 +435,10 @@ LRESULT Notepad_plus::init(HWND hwnd)
 
 	_dockingManager.init(_pPublicInterface->getHinst(), hwnd, &_pMainWindow);
 
-	if (nppGUI._isMinimizedToTray && _pTrayIco == NULL)
+	if (nppGUI._isMinimizedToTray && _pTrayIco == nullptr)
 	{
-		HICON icon = ::LoadIcon(_pPublicInterface->getHinst(), MAKEINTRESOURCE(IDI_M30ICON));
+		HICON icon = nullptr;
+		Notepad_plus_Window::loadTrayIcon(_pPublicInterface->getHinst(), &icon);
 		_pTrayIco = new trayIconControler(hwnd, IDI_M30ICON, NPPM_INTERNAL_MINIMIZED_TRAY, icon, TEXT(""));
 	}
 
@@ -1678,7 +1679,7 @@ void Notepad_plus::removeDuplicateLines()
 	// whichPart : line head or line tail
 	FindOption env;
 
-	env._str2Search = TEXT("^(.*(\\r?\\n|\\r))(\\1)+");
+	env._str2Search = TEXT("^([^\\r\\n]*(?>\\r?\\n|\\r))(?>\\1)+");
 	env._str4Replace = TEXT("\\1");
 	env._searchType = FindRegex;
 	auto mainSelStart = _pEditView->execute(SCI_GETSELECTIONSTART);
@@ -1689,7 +1690,7 @@ void Notepad_plus::removeDuplicateLines()
 	_findReplaceDlg.processAll(ProcessReplaceAll, &env, isEntireDoc);
 
 	// remove the last line if it's a duplicate line.
-	env._str2Search = TEXT("^(.+)(\\r?\\n|\\r)(\\1)$");
+	env._str2Search = TEXT("^([^\\r\\n]+)(?>\\r?\\n|\\r)(?>\\1)$");
 	_findReplaceDlg.processAll(ProcessReplaceAll, &env, isEntireDoc);
 }
 
@@ -1891,11 +1892,11 @@ bool Notepad_plus::replaceInFilelist(std::vector<generic_string> & fileNames)
 		if (i == updateOnCount)
 		{
 			updateOnCount += filesPerPercent;
-			progress.setPercent(int32_t((i * 100) / filesCount), fileNames.at(i).c_str());
+			progress.setPercent(int32_t((i * 100) / filesCount), fileNames.at(i).c_str(), nbTotal);
 		}
 		else
 		{
-			progress.setInfo(fileNames.at(i).c_str());
+			progress.setInfo(fileNames.at(i).c_str(), nbTotal);
 		}
 	}
 
@@ -1976,11 +1977,11 @@ bool Notepad_plus::findInFinderFiles(FindersInfo *findInFolderInfo)
 		if (i == updateOnCount)
 		{
 			updateOnCount += filesPerPercent;
-			progress.setPercent(int32_t((i * 100) / filesCount), fileNames.at(i).c_str());
+			progress.setPercent(int32_t((i * 100) / filesCount), fileNames.at(i).c_str(), nbTotal);
 		}
 		else
 		{
-			progress.setInfo(fileNames.at(i).c_str());
+			progress.setInfo(fileNames.at(i).c_str(), nbTotal);
 		}
 	}
 	progress.close();
@@ -2068,11 +2069,11 @@ bool Notepad_plus::findInFilelist(std::vector<generic_string> & fileNames)
 		if (i == updateOnCount)
 		{
 			updateOnCount += filesPerPercent;
-			progress.setPercent(int32_t((i * 100) / filesCount), fileNames.at(i).c_str());
+			progress.setPercent(int32_t((i * 100) / filesCount), fileNames.at(i).c_str(), nbTotal);
 		}
 		else
 		{
-			progress.setInfo(fileNames.at(i).c_str());
+			progress.setInfo(fileNames.at(i).c_str(), nbTotal);
 		}
 	}
 
@@ -3597,6 +3598,8 @@ LangType Notepad_plus::menuID2LangType(int cmdID)
             return L_VB;
         case IDM_LANG_SQL :
             return L_SQL;
+        case IDM_LANG_MSSQL :
+            return L_MSSQL;
         case IDM_LANG_ASCII :
             return L_ASCII;
         case IDM_LANG_TEXT :
@@ -3723,6 +3726,10 @@ LangType Notepad_plus::menuID2LangType(int cmdID)
             return L_VISUALPROLOG;
         case IDM_LANG_TYPESCRIPT:
             return L_TYPESCRIPT;
+        case IDM_LANG_GDSCRIPT:
+            return L_GDSCRIPT;
+        case IDM_LANG_HOLLYWOOD:
+            return L_HOLLYWOOD;	    
         case IDM_LANG_USER:
             return L_USER;
 		default:
@@ -4731,12 +4738,14 @@ void Notepad_plus::staticCheckMenuAndTB() const
 	const bool wsTabShow = _pEditView->isShownSpaceAndTab();
 	const bool eolShow = _pEditView->isShownEol();
 	const bool npcShow = _pEditView->isShownNpc();
+	const bool ccUniEolShow = _pEditView->isShownCcUniEol();
 
-	const bool allShow = wsTabShow && eolShow && npcShow;
+	const bool allShow = wsTabShow && eolShow && npcShow && ccUniEolShow;
 
 	checkMenuItem(IDM_VIEW_TAB_SPACE, wsTabShow);
 	checkMenuItem(IDM_VIEW_EOL, eolShow);
 	checkMenuItem(IDM_VIEW_NPC, npcShow);
+	checkMenuItem(IDM_VIEW_NPC_CCUNIEOL, ccUniEolShow);
 	checkMenuItem(IDM_VIEW_ALL_CHARACTERS, allShow);
 	_toolBar.setCheck(IDM_VIEW_ALL_CHARACTERS, allShow);
 
@@ -5337,8 +5346,8 @@ bool Notepad_plus::addCurrentMacro()
 			::InsertMenu(hMacroMenu, posBase + nbTopLevelItem + 2, MF_BYCOMMAND, IDM_SETTING_SHORTCUT_MAPPER_MACRO, nativeLangShortcutMapperMacro.c_str());
         }
 		theMacros.push_back(ms);
-		macroMenu.push_back(MenuItemUnit(cmdID, ms.getName()));
-		::InsertMenu(hMacroMenu, static_cast<UINT>(posBase + nbTopLevelItem), MF_BYPOSITION, cmdID, ms.toMenuItemString().c_str());
+		macroMenu.push_back(MenuItemUnit(cmdID, string2wstring(ms.getName(), CP_UTF8)));
+		::InsertMenu(hMacroMenu, static_cast<UINT>(posBase + nbTopLevelItem), MF_BYPOSITION, cmdID, string2wstring(ms.toMenuItemString(), CP_UTF8).c_str());
 		_accelerator.updateShortcuts();
 		nppParams.setShortcutDirty();
 		return true;
@@ -6332,6 +6341,12 @@ void Notepad_plus::notifyBufferChanged(Buffer * buffer, int mask)
 		setUniModeText();
 		setDisplayFormat(buffer->getEolFormat());
 		enableConvertMenuItems(buffer->getEolFormat());
+	}
+
+	if (mask & (BufferChangeUnicode))
+	{
+		_mainEditView.maintainStateForNpc();
+		_subEditView.maintainStateForNpc();
 	}
 }
 
@@ -7562,6 +7577,12 @@ static const QuoteParams quotes[] =
 	{TEXT("Anonymous #197"), QuoteParams::rapid, false, SC_CP_UTF8, L_TEXT, TEXT("When I am tasked with sorting through a stack of résumés, I throw about half of them in the garbage.\nI do not want unlucky people working in our company.\n") },
 	{TEXT("Anonymous #198"), QuoteParams::rapid, false, SC_CP_UTF8, L_TEXT, TEXT("The reason why we write SQL commands all in CAPITAL letters is because it stands for Screaming Query Language.\n") },
 	{TEXT("Anonymous #199"), QuoteParams::rapid, false, SC_CP_UTF8, L_TEXT, TEXT("Fly: Hey, bug on my back, are you a mite?\nMite: I mite be.\nFly: Stupidest pun I ever heard.\nMite: What do you expect? I just made it up on the fly.\n\n") },
+	{TEXT("Anonymous #200"), QuoteParams::rapid, false, SC_CP_UTF8, L_TEXT, TEXT("Me: What's the wifi password?\nBartender: You need to buy a drink first.\nMe: OK, I'll have a coke.\nBartender: Is Pepsi OK?\nMe: Sure. How much is that?\nBartender: $3.\nMe: There you go. So what's the wifi password?\nBartender: You need to buy a drink first. No spaces, all lowercase.\n\n") },
+	{TEXT("Anonymous #201"), QuoteParams::rapid, false, SC_CP_UTF8, L_TEXT, TEXT("People always say software engineers are useless without computers.\nIt's not true.\nSome of them are useless even with computers.\n\n") },
+	{TEXT("Anonymous #202"), QuoteParams::slow , false, SC_CP_UTF8, L_TEXT, TEXT("The plural of regex is regrets.\n\n") },
+	{TEXT("Anonymous #203"), QuoteParams::rapid , false, SC_CP_UTF8, L_TEXT, TEXT("My gynecologist follows me on Instagram, I really do not know what else he want to see.\n\n") },
+	{TEXT("Anonymous #204"), QuoteParams::slow , false, SC_CP_UTF8, L_TEXT, TEXT("The greatest security vulnerability in any computer system is located between the keyboard and the chair.\n\n") },
+	{TEXT("Anonymous #205"), QuoteParams::slow , false, SC_CP_UTF8, L_TEXT, TEXT("Courage is knowing it might hurt, and doing it anyway.\nStupidity is the same.\nAnd that's why life is hard.\n\n") },
 	{TEXT("xkcd"), QuoteParams::rapid, false, SC_CP_UTF8, L_TEXT, TEXT("Never have I felt so close to another soul\nAnd yet so helplessly alone\nAs when I Google an error\nAnd there's one result\nA thread by someone with the same problem\nAnd no answer\nLast posted to in 2003\n\n\"Who were you, DenverCoder9?\"\n\"What did you see?!\"\n\n(ref: https://xkcd.com/979/)") },
 	{TEXT("A developer"), QuoteParams::slow, false, SC_CP_UTF8, L_TEXT, TEXT("No hugs & kisses.\nOnly bugs & fixes.") },
 	{TEXT("Elon Musk"), QuoteParams::rapid, false, SC_CP_UTF8, L_TEXT, TEXT("Don't set your password as your child's name.\nName your child after your password.") },
@@ -7589,6 +7610,7 @@ static const QuoteParams quotes[] =
 	{TEXT("Chewbacca"), QuoteParams::slow, false, SC_CP_UTF8, L_TEXT, TEXT("Uuuuuuuuuur Ahhhhrrrrrr\nUhrrrr Ahhhhrrrrrr\nAaaarhg...")},
 	{TEXT("Alexandria Ocasio-Cortez"), QuoteParams::slow, false, SC_CP_UTF8, L_TEXT, TEXT("No one ever makes a billion dollars.\nYou TAKE a billion dollars.")},
 	{TEXT("Freddy Krueger"), QuoteParams::slow, false, SC_CP_UTF8, L_TEXT, TEXT("Never stop dreaming.\n")},
+	{TEXT("Word of the Day"), QuoteParams::rapid, false, SC_CP_UTF8, L_TEXT, TEXT("DEBUGGING\n\n/diːˈbʌɡɪŋ/ noun\n\nThe classic mystery game where you are the detective, the victim and the murderer.\n\n")},
 	{TEXT("Ricky Gervais"), QuoteParams::rapid, false, SC_CP_UTF8, L_TEXT, TEXT("Feel free to mock my lack of belief in any Gods.\nIt won't hurt my feelings.\nIt won't damage my faith in reason.\nAnd I won't kill you for it.")},
 	{TEXT("Francis bacon"), QuoteParams::rapid, false, SC_CP_UTF8, L_TEXT, TEXT("Knowledge is power. France is bacon.\n\nWhen I was young my father said to me: \"Knowledge is power, Francis Bacon.\" I understood it as \"Knowledge is power, France is bacon.\"\n\nFor more than a decade I wondered over the meaning of the second part and what was the surreal linkage between the two. If I said the quote to someone, \"Knowledge is power, France is Bacon\", they nodded knowingly. Or someone might say, \"Knowledge is power\" and I'd finish the quote \"France is Bacon\" and they wouldn't look at me like I'd said something very odd, but thoughtfully agree. I did ask a teacher what did \"Knowledge is power, France is bacon\" mean and got a full 10-minute explanation of the \"knowledge is power\" bit but nothing on \"France is bacon\". When I prompted further explanation by saying \"France is bacon?\" in a questioning tone I just got a \"yes\". At 12 I didn't have the confidence to press it further. I just accepted it as something I'd never understand.\n\nIt wasn't until years later I saw it written down that the penny dropped.\n")},
 	{TEXT("Space Invaders"), QuoteParams::speedOfLight, false, SC_CP_UTF8, L_TEXT, TEXT("\n\n       ▄██▄\n     ▄██████▄           █   █  █▀▀▀\n     ██▄██▄██           █   █  █▄▄\n      ▄▀▄▄▀▄            █ █ █  █\n     ▀ ▀  ▀ ▀           ▀▀ ▀▀  ▀▀▀▀\n\n      ▀▄   ▄▀           ▄█▀▀▀  ▄█▀▀█▄  █▀▄▀█  █▀▀▀\n     ▄█▀███▀█▄          █      █    █  █ ▀ █  █▄▄\n    █ █▀▀▀▀▀█ █         █▄     █▄  ▄█  █   █  █\n       ▀▀ ▀▀             ▀▀▀▀   ▀▀▀▀   ▀   ▀  ▀▀▀▀\n\n     ▄▄█████▄▄          ▀█▀  █▀▄  █\n    ██▀▀███▀▀██          █   █ ▀▄ █\n    ▀▀██▀▀▀██▀▀          █   █  ▀▄█\n    ▄█▀ ▀▀▀ ▀█▄         ▀▀▀  ▀   ▀▀\n\n      ▄▄████▄▄          █▀▀█  █▀▀▀  ▄▀▀▄  ▄█▀▀▀  █▀▀▀\n    ▄██████████▄        █▄▄█  █▄▄   █▄▄█  █      █▄▄ \n  ▄██▄██▄██▄██▄██▄      █     █     █  █  █▄     █   \n    ▀█▀  ▀▀  ▀█▀        ▀     ▀▀▀▀  ▀  ▀   ▀▀▀▀  ▀▀▀▀\n\n") },
@@ -8493,7 +8515,7 @@ void Notepad_plus::updateCommandShortcuts()
 				shortcutName = menuName;
 		}
 
-		csc.setName(menuName.c_str(), shortcutName.c_str());
+		csc.setName(wstring2string(menuName, CP_UTF8).c_str(), wstring2string(shortcutName, CP_UTF8).c_str());
 	}
 }
 

@@ -668,13 +668,14 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Show Symbol"
         BEGIN
-            MENUITEM "Show Space and Tab",              IDM_VIEW_TAB_SPACE
-            MENUITEM "Show End of Line",                IDM_VIEW_EOL
-            MENUITEM "Show Non-Printing Characters",    IDM_VIEW_NPC
-            MENUITEM "Show All Characters",             IDM_VIEW_ALL_CHARACTERS
+            MENUITEM "Show Space and Tab",                     IDM_VIEW_TAB_SPACE
+            MENUITEM "Show End of Line",                       IDM_VIEW_EOL
+            MENUITEM "Show Non-Printing Characters",           IDM_VIEW_NPC
+            MENUITEM "Show Control Characters && Unicode EOL", IDM_VIEW_NPC_CCUNIEOL
+            MENUITEM "Show All Characters",                    IDM_VIEW_ALL_CHARACTERS
             MENUITEM SEPARATOR
-            MENUITEM "Show Indent Guide",               IDM_VIEW_INDENT_GUIDE
-            MENUITEM "Show Wrap Symbol",                IDM_VIEW_WRAP_SYMBOL
+            MENUITEM "Show Indent Guide",                      IDM_VIEW_INDENT_GUIDE
+            MENUITEM "Show Wrap Symbol",                       IDM_VIEW_WRAP_SYMBOL
         END
         POPUP "Zoom"
         BEGIN
@@ -926,8 +927,10 @@ BEGIN
         MENUITEM "Fortran (free form)",     IDM_LANG_FORTRAN
         MENUITEM "Fortran (fixed form)",    IDM_LANG_FORTRAN_77
         MENUITEM "Freebasic",               IDM_LANG_FREEBASIC
+        MENUITEM "GDScript",                IDM_LANG_GDSCRIPT
         MENUITEM "Gui4Cli",                 IDM_LANG_GUI4CLI
         MENUITEM "Haskell",                 IDM_LANG_HASKELL
+        MENUITEM "Hollywood",               IDM_LANG_HOLLYWOOD
         MENUITEM "HTML",                    IDM_LANG_HTML
         MENUITEM "INI file",                IDM_LANG_INI
         MENUITEM "Inno Setup",              IDM_LANG_INNO
@@ -943,6 +946,7 @@ BEGIN
         MENUITEM "Lua",                     IDM_LANG_LUA
         MENUITEM "Makefile",                IDM_LANG_MAKEFILE
         MENUITEM "Matlab",                  IDM_LANG_MATLAB
+        MENUITEM "Microsoft Transact-SQL",  IDM_LANG_MSSQL
         MENUITEM "MMIXAL",                  IDM_LANG_MMIXAL
         MENUITEM "MS-DOS Style",            IDM_LANG_ASCII
         MENUITEM "Nim",                     IDM_LANG_NIM
@@ -1038,10 +1042,15 @@ BEGIN
         MENUITEM "Fortran (fixed form)",  IDM_LANG_FORTRAN_77
         MENUITEM "Freebasic",             IDM_LANG_FREEBASIC
     END
-    MENUITEM "Gui4Cli",                   IDM_LANG_GUI4CLI
+	POPUP "G"
+	BEGIN
+        MENUITEM "GDScript",                  IDM_LANG_GDSCRIPT
+        MENUITEM "Gui4Cli",                   IDM_LANG_GUI4CLI
+	END
     POPUP "H"
     BEGIN
         MENUITEM "Haskell",               IDM_LANG_HASKELL
+        MENUITEM "Hollywood",             IDM_LANG_HOLLYWOOD	
         MENUITEM "HTML",                  IDM_LANG_HTML
     END
     POPUP "I"
@@ -1069,6 +1078,7 @@ BEGIN
     BEGIN
         MENUITEM "Makefile",              IDM_LANG_MAKEFILE
         MENUITEM "Matlab",                IDM_LANG_MATLAB
+        MENUITEM "Microsoft Transact-SQL",IDM_LANG_MSSQL
         MENUITEM "MMIXAL",                IDM_LANG_MMIXAL
         MENUITEM "MS-DOS Style",          IDM_LANG_ASCII
     END

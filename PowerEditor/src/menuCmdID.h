@@ -376,6 +376,7 @@
     #define    IDM_VIEW_TAB_COLOUR_5              (IDM_VIEW + 115)
 
     #define    IDM_VIEW_NPC                       (IDM_VIEW + 130)
+    #define    IDM_VIEW_NPC_CCUNIEOL              (IDM_VIEW + 131)
 
     #define    IDM_VIEW_GOTO_ANOTHER_VIEW        10001
     #define    IDM_VIEW_CLONE_TO_ANOTHER_VIEW    10002
@@ -538,7 +539,10 @@
     #define    IDM_LANG_VISUALPROLOG       (IDM_LANG + 83)
     #define    IDM_LANG_TYPESCRIPT         (IDM_LANG + 84)
     #define    IDM_LANG_JSON5              (IDM_LANG + 85)
-
+    #define    IDM_LANG_MSSQL              (IDM_LANG + 86)
+    #define    IDM_LANG_GDSCRIPT           (IDM_LANG + 87)
+    #define    IDM_LANG_HOLLYWOOD          (IDM_LANG + 88)
+    
     #define    IDM_LANG_EXTERNAL           (IDM_LANG + 165)
     #define    IDM_LANG_EXTERNAL_LIMIT     (IDM_LANG + 179)
 

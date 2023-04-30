@@ -18,11 +18,10 @@
 
 #include "columnEditor_rc.h"
 #include "StaticDialog.h"
+#include "Parameters.h"
 
 class ScintillaEditView;
 
-const bool activeText = true;
-const bool activeNumeric = false;
 
 class ColumnEditorDlg : public StaticDialog
 {
@@ -45,6 +44,7 @@ public :
     virtual void display(bool toShow = true) const;
 	void switchTo(bool toText);
 	UCHAR getFormat();
+	ColumnEditorParam::leadingChoice getLeading();
 
 protected :
 	virtual intptr_t CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam);

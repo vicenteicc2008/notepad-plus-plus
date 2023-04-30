@@ -1,3 +1,33 @@
+Notepad++ v8.5.2 bug-fixes and new features:
+
+1.  Enhance "Edit with Notepad++" context menu and fix several issues.
+2.  Make Find/Replace dialog swap/copy button usage more explicit.
+3.  Fix unexpected caret column jump post brace match.
+4.  Add hits in-progress increased number to Search Progress dialog.
+5.  Add HTML Hexadecimal column and more items to ASCII panel.
+6.  Add ability to do leading spaces with Column Editor.
+7.  Add programming language support for Hollywood.
+8.  Fix dock panels visual glitch while finding in search results.
+9.  Fix Mark dialog's Copy Marked Text button is not macro-able issue.
+10. Dark mode enhancement: make focused combobox more visible.
+11. Fix find dialog flicker issue.
+12. Enhance Notepad++ icon's display in system tray.
+13. Fix some options in Mark dialog not remembered though the session issue.
+
+
+Notepad++ v8.5.1 bug-fixes and new features:
+
+1.  Use new modern shell "Edit with Notepad++" of Windows 11 instead of hijacking "Pin to Quick access".
+2.  Update scintilla to 5.3.4 and lexilla to 5.2.4.
+3.  Add MS Transact-SQL support.
+4.  Add GDScript language support with autocomplete & functionlist.
+5.  Fix UDL empty button regression after changing localization.
+6.  Add ability to copy "Find what" to "Replace with" and vice versa in Find Replace dialog.
+7.  Fix DocSwitcher RTL problem, and use edit field instead of a small popup value dialog.
+8.  GUI visual enhancement: Fix whole dialog items blink when a item value changed.
+9.  Make tray icon context menu translatable.
+
+
 Notepad++ v8.5 bug-fixes and new features:
 
 1.  Fix notepad replacement opening file name containing white space regression.
@@ -26,7 +56,7 @@ Notepad++ v8.5 bug-fixes and new features:
 24. Make several GUI items translatable.
 
 Get more info on
-https://notepad-plus-plus.org/downloads/v8.5/
+https://notepad-plus-plus.org/downloads/v8.5.2/
 
 
 Included plugins:

@@ -1357,8 +1357,8 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 		case NPPM_GETNPPVERSION:
 		{
 			const TCHAR* verStr = VERSION_VALUE;
-			TCHAR mainVerStr[16];
-			TCHAR auxVerStr[16];
+			TCHAR mainVerStr[16]{};
+			TCHAR auxVerStr[16]{};
 			bool isDot = false;
 			int j = 0;
 			int k = 0;
@@ -1455,7 +1455,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		case WM_FRSAVE_STR:
 		{
-			_macro.push_back(recordedMacroStep(static_cast<int32_t>(wParam), 0, 0, reinterpret_cast<const TCHAR *>(lParam), recordedMacroStep::mtSavedSnR));
+			_macro.push_back(recordedMacroStep(static_cast<int32_t>(wParam), 0, 0, reinterpret_cast<const char *>(lParam), recordedMacroStep::mtSavedSnR));
 			break;
 		}
 
@@ -1463,13 +1463,7 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 		{
 			if (!_recordingMacro) // if we're not currently recording, then playback the recorded keystrokes
 			{
-				int times = 1;
-				if (_runMacroDlg.getMode() == RM_RUN_MULTI)
-					times = _runMacroDlg.getTimes();
-				else if (_runMacroDlg.getMode() == RM_RUN_EOF)
-					times = -1;
-				else
-					break;
+				int times = _runMacroDlg.isMulti() ? _runMacroDlg.getTimes() : -1;
 
 				int counter = 0;
 				intptr_t lastLine = _pEditView->execute(SCI_GETLINECOUNT) - 1;
@@ -1759,10 +1753,23 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 
 		case NPPM_INTERNAL_SETNPC:
 		{
-			const bool isShown = nppParam.getSVP()._npcShow;
-			_mainEditView.showNpc(isShown);
-			_subEditView.showNpc(isShown);
-			_findReplaceDlg.updateFinderScintillaForNpc();
+			const auto& svp = nppParam.getSVP();
+			const bool isFromIncCcUniEolCtrl = wParam == IDC_CHECK_NPC_INCLUDECCUNIEOL;
+			if (isFromIncCcUniEolCtrl || svp._npcIncludeCcUniEol)
+			{
+				const bool isShown = svp._ccUniEolShow;
+				_mainEditView.showCcUniEol(isShown);
+				_subEditView.showCcUniEol(isShown);
+			}
+
+			if (!isFromIncCcUniEolCtrl)
+			{
+				const bool isShown = svp._npcShow;
+				_mainEditView.showNpc(isShown);
+				_subEditView.showNpc(isShown);
+				_findReplaceDlg.updateFinderScintillaForNpc();
+			}
+
 			return TRUE;
 		}
 
@@ -2537,7 +2544,11 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 			if ((nppgui._isMinimizedToTray || _pPublicInterface->isPrelaunch()) && (wParam == SC_MINIMIZE))
 			{
 				if (nullptr == _pTrayIco)
-					_pTrayIco = new trayIconControler(hwnd, IDI_M30ICON, NPPM_INTERNAL_MINIMIZED_TRAY, ::LoadIcon(_pPublicInterface->getHinst(), MAKEINTRESOURCE(IDI_M30ICON)), TEXT(""));
+				{
+					HICON icon = nullptr;
+					Notepad_plus_Window::loadTrayIcon(_pPublicInterface->getHinst(), &icon);
+					_pTrayIco = new trayIconControler(hwnd, IDI_M30ICON, NPPM_INTERNAL_MINIMIZED_TRAY, icon, TEXT(""));
+				}
 
 				_pTrayIco->doTrayIcon(ADD);
 				_dockingManager.showFloatingContainers(false);
@@ -2941,14 +2952,15 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 		
 		case NPPM_INTERNAL_NPCFORMCHANGED:
 		{
-			NppParameters& nppParam = NppParameters::getInstance();
-			const bool isShown = nppParam.getSVP()._npcShow;
-			if (isShown)
+			_mainEditView.setNpcAndCcUniEOL();
+			_subEditView.setNpcAndCcUniEOL();
+
+			const auto& svp = NppParameters::getInstance().getSVP();
+			if (svp._npcShow)
 			{
-				_mainEditView.setNPC();
-				_subEditView.setNPC();
 				_findReplaceDlg.updateFinderScintillaForNpc(true);
 			}
+
 			return TRUE;
 		}
 

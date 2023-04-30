@@ -54,8 +54,19 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
 			if (colEditParam._repeatNum != -1)
 				::SetDlgItemInt(_hSelf, IDC_COL_REPEATNUM_EDIT, colEditParam._repeatNum, FALSE);
 			
-			::SendDlgItemMessage(_hSelf, IDC_COL_LEADZERO_CHECK, BM_SETCHECK, colEditParam._isLeadingZeros, 0);
-				
+			::SendDlgItemMessage(_hSelf, IDC_COL_LEADING_COMBO, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(TEXT("None")));
+			::SendDlgItemMessage(_hSelf, IDC_COL_LEADING_COMBO, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(TEXT("Zeros")));
+			::SendDlgItemMessage(_hSelf, IDC_COL_LEADING_COMBO, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(TEXT("Spaces")));
+			WPARAM curSel = 0;
+			switch (colEditParam._leadingChoice)
+			{
+				case ColumnEditorParam::noneLeading: { curSel = 0; break; }
+				case ColumnEditorParam::zeroLeading : { curSel = 1; break; }
+				case ColumnEditorParam::spaceLeading : { curSel = 2; break; }
+				default : { curSel = 0; break; }
+			}
+			::SendMessage(::GetDlgItem(_hSelf, IDC_COL_LEADING_COMBO), CB_SETCURSEL, curSel, 0);
+
 			int format = IDC_COL_DEC_RADIO;
 			if (colEditParam._formatChoice == 1)
 				format = IDC_COL_HEX_RADIO;
@@ -77,6 +88,11 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
 			return NppDarkMode::onCtlColorSofter(reinterpret_cast<HDC>(wParam));
 		}
 
+		case WM_CTLCOLORLISTBOX:
+		{
+			return NppDarkMode::onCtlColor(reinterpret_cast<HDC>(wParam));
+		}
+
 		case WM_CTLCOLORDLG:
 		{
 			return NppDarkMode::onCtlColorDarker(reinterpret_cast<HDC>(wParam));
@@ -89,7 +105,8 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
 
 			bool isStaticText = (dlgCtrlID == IDC_COL_INITNUM_STATIC ||
 				dlgCtrlID == IDC_COL_INCRNUM_STATIC ||
-				dlgCtrlID == IDC_COL_REPEATNUM_STATIC);
+				dlgCtrlID == IDC_COL_REPEATNUM_STATIC ||
+				dlgCtrlID == IDC_COL_LEADING_STATIC);
 			//set the static text colors to show enable/disable instead of ::EnableWindow which causes blurry text
 			if (isStaticText)
 			{
@@ -125,7 +142,7 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
 			if (NppDarkMode::isEnabled())
 			{
 				const ColumnEditorParam& colEditParam = NppParameters::getInstance()._columnEditParam;
-				::EnableWindow(::GetDlgItem(_hSelf, IDC_COL_FORMAT_GRP_STATIC), !colEditParam._mainChoice);
+				::EnableWindow(::GetDlgItem(_hSelf, IDC_COL_FORMAT_GRP_STATIC), colEditParam._mainChoice == activeNumeric);
 			}
 			NppDarkMode::autoThemeChildControls(_hSelf);
 			return TRUE;
@@ -143,8 +160,8 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
                 {
 					(*_ppEditView)->execute(SCI_BEGINUNDOACTION);
 					
-					const int stringSize = 1024;
-					TCHAR str[stringSize];
+					constexpr int stringSize = 1024;
+					TCHAR str[stringSize]{};
 					
 					bool isTextMode = (BST_CHECKED == ::SendDlgItemMessage(_hSelf, IDC_COL_TEXT_RADIO, BM_GETCHECK, 0, 0));
 					
@@ -230,7 +247,7 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
 							if (colInfos.size() > 0)
 							{
 								std::sort(colInfos.begin(), colInfos.end(), SortInPositionOrder());
-								(*_ppEditView)->columnReplace(colInfos, initialNumber, increaseNumber, repeat, format);
+								(*_ppEditView)->columnReplace(colInfos, initialNumber, increaseNumber, repeat, format, getLeading());
 								std::sort(colInfos.begin(), colInfos.end(), SortInSelectOrder());
 								(*_ppEditView)->setMultiSelections(colInfos);
 							}
@@ -266,9 +283,7 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
 							int lineAllocatedLen = 1024;
 							TCHAR *line = new TCHAR[lineAllocatedLen];
 
-
 							UCHAR f = format & MASK_FORMAT;
-							bool isZeroLeading = (MASK_ZERO_LEADING & format) != 0;
 							
 							int base = 10;
 							if (f == BASE_16)
@@ -303,7 +318,7 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
 								//
 								// Calcule generic_string
 								//
-								int2str(str, stringSize, numbers.at(i - cursorLine), base, nb, isZeroLeading);
+								int2str(str, stringSize, numbers.at(i - cursorLine), base, nb, getLeading());
 
 								if (lineEndCol < cursorCol)
 								{
@@ -356,14 +371,6 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
 					return TRUE;
 				}
 
-				case IDC_COL_LEADZERO_CHECK:
-				{
-					ColumnEditorParam& colEditParam = NppParameters::getInstance()._columnEditParam;
-					bool isLeadingZeros = (BST_CHECKED == ::SendDlgItemMessage(_hSelf, IDC_COL_LEADZERO_CHECK, BM_GETCHECK, 0, 0));
-					colEditParam._isLeadingZeros = isLeadingZeros;
-					return TRUE;
-				}
-
 				default :
 				{
 					switch (HIWORD(wParam))
@@ -371,8 +378,8 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
 						case EN_CHANGE:
 						{
 							ColumnEditorParam& colEditParam = NppParameters::getInstance()._columnEditParam;
-							const int stringSize = MAX_PATH;
-							TCHAR str[stringSize];
+							constexpr int stringSize = MAX_PATH;
+							TCHAR str[stringSize]{};
 
 							switch (LOWORD(wParam))
 							{								
@@ -380,6 +387,7 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
 								{
 									::GetDlgItemText(_hSelf, LOWORD(wParam), str, stringSize);
 									colEditParam._insertedTextContent = str;
+									::EnableWindow(::GetDlgItem(_hSelf, IDOK), str[0]);
 									return TRUE;
 								}
 								case IDC_COL_INITNUM_EDIT:
@@ -427,6 +435,17 @@ intptr_t CALLBACK ColumnEditorDlg::run_dlgProc(UINT message, WPARAM wParam, LPAR
 							}
 						}
 						break;
+
+						case CBN_SELCHANGE:
+						{
+							if (LOWORD(wParam) == IDC_COL_LEADING_COMBO)
+							{
+								ColumnEditorParam& colEditParam = NppParameters::getInstance()._columnEditParam;
+								colEditParam._leadingChoice = getLeading();
+								return TRUE;
+							}
+						}
+						break;
 					}
 					break;
 				}
@@ -455,13 +474,15 @@ void ColumnEditorDlg::switchTo(bool toText)
 	::EnableWindow(::GetDlgItem(_hSelf, IDC_COL_HEX_RADIO), !toText);
 	::EnableWindow(::GetDlgItem(_hSelf, IDC_COL_OCT_RADIO), !toText);
 	::EnableWindow(::GetDlgItem(_hSelf, IDC_COL_BIN_RADIO), !toText);
-	::EnableWindow(::GetDlgItem(_hSelf, IDC_COL_LEADZERO_CHECK), !toText);
+	::EnableWindow(::GetDlgItem(_hSelf, IDC_COL_LEADING_COMBO), !toText);
+	::EnableWindow(::GetDlgItem(_hSelf, IDOK), !toText || !NppParameters::getInstance()._columnEditParam._insertedTextContent.empty());
 
 	::SetFocus(toText?hText:hNum);
 
 	redrawDlgItem(IDC_COL_INITNUM_STATIC);
 	redrawDlgItem(IDC_COL_INCRNUM_STATIC);
 	redrawDlgItem(IDC_COL_REPEATNUM_STATIC);
+	redrawDlgItem(IDC_COL_LEADING_STATIC);
 
 	if (NppDarkMode::isEnabled())
 	{
@@ -470,9 +491,8 @@ void ColumnEditorDlg::switchTo(bool toText)
 	}
 }
 
-UCHAR ColumnEditorDlg::getFormat() 
+UCHAR ColumnEditorDlg::getFormat()
 {
-	bool isLeadingZeros = (BST_CHECKED == ::SendDlgItemMessage(_hSelf, IDC_COL_LEADZERO_CHECK, BM_GETCHECK, 0, 0));
 	UCHAR f = 0; // Dec by default
 	if (BST_CHECKED == ::SendDlgItemMessage(_hSelf, IDC_COL_HEX_RADIO, BM_GETCHECK, 0, 0))
 		f = 1;
@@ -480,5 +500,31 @@ UCHAR ColumnEditorDlg::getFormat()
 		f = 2;
 	else if (BST_CHECKED == ::SendDlgItemMessage(_hSelf, IDC_COL_BIN_RADIO, BM_GETCHECK, 0, 0))
 		f = 3;
-	return (f | (isLeadingZeros?MASK_ZERO_LEADING:0));
+	return f;
+}
+
+ColumnEditorParam::leadingChoice ColumnEditorDlg::getLeading()
+{
+	ColumnEditorParam::leadingChoice leading = ColumnEditorParam::noneLeading;
+	int curSel = static_cast<int>(::SendDlgItemMessage(_hSelf, IDC_COL_LEADING_COMBO, CB_GETCURSEL, 0, 0));
+	switch (curSel)
+	{
+		case 0:
+		default:
+		{ 
+			leading = ColumnEditorParam::noneLeading; 
+			break; 
+		}
+		case 1: 
+		{ 
+			leading = ColumnEditorParam::zeroLeading; 
+			break; 
+		}
+		case 2: 
+		{
+			leading = ColumnEditorParam::spaceLeading; 
+			break;
+		}
+	}
+	return leading;
 }

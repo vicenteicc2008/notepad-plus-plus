@@ -4,45 +4,26 @@ The comments are here for explanation, it's not necessary to translate them.
 -->
 <!--
     History of Corsican translation for Notepad++
-		- Updated on February 24th, 2023 for version 8.5.0 by Patriccollu di Santa Maria è Sichè
-		- Updated on December 31st, 2022 for version 8.4.9 by Patriccollu di Santa Maria è Sichè
-		- Updated on December 1st, 2022 for version 8.4.8 by Patriccollu di Santa Maria è Sichè
-		- Updated on October 22nd, 2022 for version 8.4.7 by Patriccollu di Santa Maria è Sichè
-		- Updated on September 21st, 2022 for version 8.4.6 by Patriccollu di Santa Maria è Sichè
-		- Updated on August 24th, 2022 for version 8.4.5 by Patriccollu di Santa Maria è Sichè
-		- Updated on June 27th, 2022 for version 8.4.3 by Patriccollu di Santa Maria è Sichè
-		- Updated on May 25th, 2022 for version 8.4.2 by Patriccollu di Santa Maria è Sichè
-		- Updated on April 27th, 2022 for version 8.4.1 by Patriccollu di Santa Maria è Sichè
-		- Updated on April 7nd, 2022 for version 8.3.4 by Patriccollu di Santa Maria è Sichè
-		- Updated on February 21st, 2022 for version 8.3.2 by Patriccollu di Santa Maria è Sichè
-		- Updated on February 8th, 2022 for version 8.3.1 by Patriccollu di Santa Maria è Sichè
-		- Updated on January 11th, 2022 for version 8.2.1 by Patriccollu di Santa Maria è Sichè
-		- Updated on December 4th, 2021 for version 8.1.9.3 by Patriccollu di Santa Maria è Sichè
-		- Updated on September 13th, 2021 for version 8.1.5 by Patriccollu di Santa Maria è Sichè
-		- Updated on August 20th, 2021 for version 8.1.4 by Patriccollu di Santa Maria è Sichè
-		- Updated on July 31st, 2021 for version 8.1.3 by Patriccollu di Santa Maria è Sichè
-		- Updated on June 14th, 2021 for version 8.0.0 by Patriccollu di Santa Maria è Sichè
-		- Updated on May 20th, 2021 for version 7.9.6 by Patriccollu di Santa Maria è Sichè
-		- Updated on May 12th, 2021 for version 7.9.6 by Patriccollu di Santa Maria è Sichè
-		- Updated on January 27th, 2021 for version 7.9.3 by Patriccollu di Santa Maria è Sichè
-		- Updated on November 4th, 2020 for version 7.9.2 by Patriccollu di Santa Maria è Sichè
-		- Updated on September 16th, 2020 for version 7.9.1 by Patriccollu di Santa Maria è Sichè
-		- Updated on June 28th, 2020 for version 7.8.9 by Patriccollu di Santa Maria è Sichè
-		- Updated on April 19th, 2020 for version 7.8.7 by Patriccollu di Santa Maria è Sichè
-		- Updated on December 5th, 2019 for version 7.8.3 by Patriccollu di Santa Maria è Sichè
-		- Updated on November 2nd, 2019 for version 7.8.1 by Patriccollu di Santa Maria è Sichè
-		- Updated on July 7th, 2019 for version 7.7.2 by Patriccollu di Santa Maria è Sichè
-		- Updated on March 29th, 2019 for version 7.6.5 by Patriccollu di Santa Maria è Sichè
+
+		- Updated in 2023 by Patriccollu di Santa Maria è Sichè: Feb. 24th (v8.5), Mar. 12th (v8.5.1), Mar. 31st (v8.5.2)
+		- Updated in 2022 by Patriccollu di Santa Maria è Sichè: Jan. 11th (v8.2.1), Feb. 8th (v8.3.1), Feb. 21st (v8.3.2),
+		          Sep. 21st (v8.4.6), Apr. 7th (v8.3.4), Apr. 27th (v8.4.1), May 25th (v8.4.2), June 27th (v8.4.3),
+		          Aug. 24th (v8.4.5), Oct. 22nd (v8.4.7), Dec. 1st (v8.4.8), Dec. 31st (v8.4.9)
+		- Updated in 2021 by Patriccollu di Santa Maria è Sichè: Jan. 27th (v7.9.3), May 12th (v7.9.6), May 20th (v7.9.6),
+		          June 14th (v8.0.0), July 31st (v8.1.3), Aug. 20th (v8.1.4), Sep. 13th (v8.1.5), Dec. 4th (v8.1.9.3)
+		- Updated in 2020 by Patriccollu di Santa Maria è Sichè: Apr. 19th (v7.8.7), June 28th (v7.8.9), Sep. 16th (v7.9.1),
+		          Nov, 4th (v7.9.2)
+		- Updated in 2019 by Patriccollu di Santa Maria è Sichè: Mar. 29th (v7.6.5), July 7th (v7.7.2), Nov. 2nd (v7.8.1),
+		          Dec. 5th (v7.8.3)
 		- Updated on March 11th, 2018 for version 7.5.5 by Patriccollu di Santa Maria è Sichè
-		- Updated on August 19th, 2017 for version 7.5 by Patriccollu di Santa Maria è Sichè
-		- Updated on April 30th, 2017 for version 7.3.3 by Patriccollu di Santa Maria è Sichè
+		- Updated in 2017 by Patriccollu di Santa Maria è Sichè: April 30th (v7.3.3), August 19th (v7.5)
 		- Created on September 14th, 2016 for version 6.9.2 by Patriccollu di Santa Maria è Sichè
 
-    The latest update is still available here:
+    The latest update of Corsican translation file is available here:
 	https://github.com/notepad-plus-plus/notepad-plus-plus/blob/master/PowerEditor/installer/nativeLang/corsican.xml
 -->
 <NotepadPlus>
-    <Native-Langue name="Corsu" filename="corsican.xml" version="8.5.0">
+    <Native-Langue name="Corsu" filename="corsican.xml" version="8.5.2">
         <Menu>
             <Main>
                 <!-- Main Menu Entries -->
@@ -424,8 +405,6 @@ The comments are here for explanation, it's not necessary to translate them.
                     <Item id="11009" name="Dimensione da maiò à chjuca"/>
                 </Commands>
             </Main>
-            <Splitter>
-            </Splitter>
             <TabBar>
                 <Item CMDID="41003" name="Chjode"/>
                 <Item CMDID="0" name="Chjode parechje unghjette"/>
@@ -463,6 +442,14 @@ The comments are here for explanation, it's not necessary to translate them.
                 <Item CMDID="44115" name="Appiecà u culore 5"/>
                 <Item CMDID="44110" name="Caccià u culore"/>
             </TabBar>
+            <TrayIcon>
+                <Item id="43101" name="Attivà l’appiecazione"/>
+                <Item id="43102" name="Creà un schedariu novu"/>
+                <Item id="43103" name="Incullà in un schedariu novu"/>
+                <Item id="43104" name="Apre un schedariu…"/>
+                <Item id="43013" name="Circà in schedarii…"/>
+                <Item id="43105" name="Chjode l’icona di nutificazione"/>
+            </TrayIcon>
         </Menu>
 
         <Dialog>
@@ -508,6 +495,11 @@ The comments are here for explanation, it's not necessary to translate them.
                 <Item id="1721" name="▲"/>
                 <Item id="1723" name="▼ Circà a seguente"/>
                 <Item id="1725" name="Cupià u testu marcatu"/>
+                <Menu>
+                    <Item id="1726" name="⇅ Permutà trà Circà è Rimpiazzà"/>
+                    <Item id="1727" name="⤵ Cupià da Circà à Rimpiazzà"/>
+                    <Item id="1728" name="⤴ Cupià da Rimpiazzà à Circà"/>
+                </Menu>
             </Find>
             <IncrementalFind title="">
                 <Item id="1681" name="Circà"/>
@@ -1145,7 +1137,6 @@ Pudete definisce parechji marcatori di culonna impieghendu un spaziu per staccà
 
                 <RecentFilesHistory title="Schedarii recenti">
                     <Item id="6304" name="Cronolugia di i schedarii recenti"/>
-                    <Item id="6306" name="Numeru massimu d’elementi :"/>
                     <Item id="6305" name="Ùn verificà micca à u lanciu"/>
                     <Item id="6429" name="Affissera"/>
                     <Item id="6424" name="In sottulistinu"/>
@@ -1307,7 +1298,12 @@ Pudete definisce parechji marcatori di culonna impieghendu un spaziu per staccà
                 <Item id="2033" name="&amp;Numeru à framette"/>
                 <Item id="2030" name="Numeru di &amp;principiu :"/>
                 <Item id="2031" name="&amp;Cresce da :"/>
-                <Item id="2035" name="&amp;Zeru davanti"/>
+                <Item id="2038" name="D&amp;avanti :"/>
+                <ComboBox id="2039">
+                    <Element name="Nunda"/>
+                    <Element name="Zeri"/>
+                    <Element name="Spazii"/>
+                </ComboBox>
                 <Item id="2036" name="&amp;Ripete :"/>
                 <Item id="2032" name="Furmatu"/>
                 <Item id="2024" name="&amp;Decimale"/>
@@ -1488,8 +1484,9 @@ Vulete arregistrà i vostri cambiamenti nanzu di cambià di tema ?"/> <!-- HowT
             <ColumnVal name="Valore"/>
             <ColumnHex name="Esadecimale"/>
             <ColumnChar name="Caratteru"/>
-            <ColumnHtmlNumber name="Numeru HTML"/>
-            <ColumnHtmlName name="Codice HTML"/>
+            <ColumnHtmlName name="Nome HTML"/>
+            <ColumnHtmlNumber name="Decimale HTML"/>
+            <ColumnHtmlHexNb name="Esadecimale HTML"/>
         </AsciiInsertion>
         <DocumentMap>
             <PanelTitle name="Cartugrafia di u ducumentu"/>
@@ -1507,7 +1504,7 @@ Vulete arregistrà i vostri cambiamenti nanzu di cambià di tema ?"/> <!-- HowT
             <ExpandAllFoldersTip name="Spiegà tutti i cartulari"/>
             <CollapseAllFoldersTip name="Ripiegà tutti i cartulari"/>
             <LocateCurrentFileTip name="Lucalizà u schedariu currente"/>
-            <Menus>
+            <Menu>
                 <Item id="3511" name="Caccià"/>
                 <Item id="3512" name="Caccialli tutti"/>
                 <Item id="3513" name="Aghjunghje"/>
@@ -1518,7 +1515,7 @@ Vulete arregistrà i vostri cambiamenti nanzu di cambià di tema ?"/> <!-- HowT
                 <Item id="3518" name="Espluratore quì"/>
                 <Item id="3519" name="CMD quì"/>
                 <Item id="3520" name="Cupià u nome di schedariu"/>
-            </Menus>
+            </Menu>
         </FolderAsWorkspace>
         <ProjectManager>
             <PanelTitle name="Prughjettu"/>
@@ -1648,12 +1645,9 @@ Circà in tutti i schedarii ma esclude tutti i cartulari è sottucartulari log o
             <tabrename-newname value="Novu nome : "/>
             <splitter-rotate-left value="Girà à manca"/>
             <splitter-rotate-right value="Girà à diritta"/>
-            <recent-file-history-maxfile value="Numeru : "/>
-            <recent-file-history-customlength value="Longhezza : "/>
             <userdefined-title-new value="Creà un novu linguaghju…"/>
             <userdefined-title-save value="Arregistrà u nome di u linguaghju attuale cum’è…"/>
             <userdefined-title-rename value="Rinuminà u linguaghju attuale"/>
-            <edit-verticaledge-nb-col value="N° di culonne :"/>
             <summary value="Statistiche"/>
             <summary-filepath value="Chjassu d’accessu : "/>
             <summary-filecreatetime value="Data di creazione : "/>
@@ -1665,6 +1659,7 @@ Circà in tutti i schedarii ma esclude tutti i cartulari è sottucartulari log o
             <summary-nbsel1 value=" caratteri selezziunati ("/>
             <summary-nbsel2 value=" ottetti) in "/>
             <summary-nbrange value=" selezzioni"/>
+            <progress-hits-title value="Occurrenze :"/>
             <progress-cancel-button value="Abbandunà"/>
             <progress-cancel-info value="Abbandonu di l’operazione, aspittate per piacè…"/>
             <find-in-files-progress-title value="Prugressione di a ricerca in i schedarii…"/>

@@ -1043,9 +1043,7 @@ void NativeLangSpeaker::changeShortcutLang()
 				CommandShortcut & csc = mainshortcuts[index];
 				if (csc.getID() == (unsigned long)id) 
 				{
-					WcharMbcsConvertor& wmc = WcharMbcsConvertor::getInstance();
-					const wchar_t * nameW = wmc.char2wchar(name, _nativeLangEncoding);
-					csc.setName(nameW);
+					csc.setName(name);
 				}
 			}
 		}
@@ -1073,10 +1071,7 @@ void NativeLangSpeaker::changeShortcutLang()
 			{
 				const char *name = element->Attribute("name");
 				ScintillaKeyMap & skm = scinshortcuts[index];
-
-				WcharMbcsConvertor& wmc = WcharMbcsConvertor::getInstance();
-				const wchar_t * nameW = wmc.char2wchar(name, _nativeLangEncoding);
-				skm.setName(nameW);
+				skm.setName(name);
 			}
 		}
 	}
@@ -1277,14 +1272,20 @@ bool NativeLangSpeaker::getMsgBoxLang(const char *msgBoxTagName, generic_string 
 	return false;
 }
 
-generic_string NativeLangSpeaker::getFileBrowserLangMenuStr(int cmdID, const TCHAR *defaultStr) const
+generic_string NativeLangSpeaker::getDlgLangMenuStr(const char* firstLevelNodeName, const char* secondLevelNodeName, int cmdID, const TCHAR* defaultStr) const
 {
 	if (!_nativeLangA) return defaultStr;
 
-	TiXmlNodeA *targetNode = _nativeLangA->FirstChild(FOLDERASWORKSPACE_NODE);
+	TiXmlNodeA *targetNode = _nativeLangA->FirstChild(firstLevelNodeName);
 	if (!targetNode) return defaultStr;
 
-	targetNode = targetNode->FirstChild("Menus");
+	if (secondLevelNodeName && secondLevelNodeName[0])
+	{
+		targetNode = targetNode->FirstChild(secondLevelNodeName);
+		if (!targetNode) return defaultStr;
+	}
+	
+	targetNode = targetNode->FirstChild("Menu");
 	if (!targetNode) return defaultStr;
 
 	const char *name = NULL;
