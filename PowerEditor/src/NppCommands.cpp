@@ -33,6 +33,8 @@
 #include "verifySignedfile.h"
 #include "md5.h"
 #include "sha-256.h"
+#include "calc_sha1.h"
+#include "sha512.h"
 
 using namespace std;
 
@@ -233,11 +235,10 @@ void Notepad_plus::command(int id)
 		case IDM_DOCLIST_FILESCLOSEOTHERS:
 			if (_pDocumentListPanel)
 			{
-				vector<SwitcherFileInfo> files = _pDocumentListPanel->getSelectedFiles(id == IDM_DOCLIST_FILESCLOSEOTHERS);
-				for (size_t i = 0, len = files.size(); i < len; ++i)
-				{
-					fileClose((BufferID)files[i]._bufID, files[i]._iView);
-				}
+				vector<BufferViewInfo> bufs2Close = _pDocumentListPanel->getSelectedFiles(id == IDM_DOCLIST_FILESCLOSEOTHERS);
+
+				fileCloseAllGiven(bufs2Close);
+
 				if (id == IDM_DOCLIST_FILESCLOSEOTHERS)
 				{
 					// Get current buffer and its view
@@ -2138,24 +2139,19 @@ void Notepad_plus::command(int id)
 		}
 		break;
 
-		case IDM_VIEW_REDUCETABBAR :
+		case IDM_VIEW_REDUCETABBAR:
 		{
 			_toReduceTabBar = !_toReduceTabBar;
-
-			//Resize the  icon
-			int iconDpiDynamicalSize = NppParameters::getInstance()._dpiManager.scaleY(_toReduceTabBar?12:18);
+			auto& dpiManager = NppParameters::getInstance()._dpiManager;
 
 			//Resize the tab height
-			int tabDpiDynamicalWidth = NppParameters::getInstance()._dpiManager.scaleX(45);
-			int tabDpiDynamicalHeight = NppParameters::getInstance()._dpiManager.scaleY(_toReduceTabBar?22:25);
+			int tabDpiDynamicalWidth = dpiManager.scaleX(g_TabWidth);
+			int tabDpiDynamicalHeight = dpiManager.scaleY(_toReduceTabBar ? g_TabHeight : g_TabHeightLarge);
 			TabCtrl_SetItemSize(_mainDocTab.getHSelf(), tabDpiDynamicalWidth, tabDpiDynamicalHeight);
 			TabCtrl_SetItemSize(_subDocTab.getHSelf(), tabDpiDynamicalWidth, tabDpiDynamicalHeight);
-			_docTabIconList.addIcons(iconDpiDynamicalSize);
 
 			//change the font
-			int stockedFont = _toReduceTabBar?DEFAULT_GUI_FONT:SYSTEM_FONT;
-			HFONT hf = (HFONT)::GetStockObject(stockedFont);
-
+			const auto& hf = _mainDocTab.getFont(_toReduceTabBar);
 			if (hf)
 			{
 				::SendMessage(_mainDocTab.getHSelf(), WM_SETFONT, reinterpret_cast<WPARAM>(hf), MAKELPARAM(TRUE, 0));
@@ -2190,13 +2186,14 @@ void Notepad_plus::command(int id)
 			break;
 		}
 
-		case IDM_VIEW_DRAWTABBAR_CLOSEBOTTUN :
+		case IDM_VIEW_DRAWTABBAR_CLOSEBOTTUN:
 		{
 			TabBarPlus::setDrawTabCloseButton(!TabBarPlus::drawTabCloseButton());
+			auto& dpiManager = NppParameters::getInstance()._dpiManager;
 
 			// This part is just for updating (redraw) the tabs
-			int tabDpiDynamicalHeight = NppParameters::getInstance()._dpiManager.scaleY(22);
-			int tabDpiDynamicalWidth = NppParameters::getInstance()._dpiManager.scaleX(TabBarPlus::drawTabCloseButton() ? 60 : 45);
+			int tabDpiDynamicalHeight = dpiManager.scaleY(_toReduceTabBar ? g_TabHeight : g_TabHeightLarge);
+			int tabDpiDynamicalWidth = dpiManager.scaleX(TabBarPlus::drawTabCloseButton() ? g_TabWidthCloseBtn : g_TabWidth);
 			TabCtrl_SetItemSize(_mainDocTab.getHSelf(), tabDpiDynamicalWidth, tabDpiDynamicalHeight);
 			TabCtrl_SetItemSize(_subDocTab.getHSelf(), tabDpiDynamicalWidth, tabDpiDynamicalHeight);
 
@@ -3218,6 +3215,24 @@ void Notepad_plus::command(int id)
 		}
 		break;
 
+		case IDM_TOOL_SHA1_GENERATE:
+		{
+			bool isFirstTime = !_sha1FromTextDlg.isCreated();
+			_sha1FromTextDlg.doDialog(_nativeLangSpeaker.isRTL());
+			if (isFirstTime)
+				_nativeLangSpeaker.changeDlgLang(_sha1FromTextDlg.getHSelf(), "SHA1FromTextDlg");
+		}
+		break;
+
+		case IDM_TOOL_SHA1_GENERATEFROMFILE:
+		{
+			bool isFirstTime = !_sha1FromFilesDlg.isCreated();
+			_sha1FromFilesDlg.doDialog(_nativeLangSpeaker.isRTL());
+			if (isFirstTime)
+				_nativeLangSpeaker.changeDlgLang(_sha1FromFilesDlg.getHSelf(), "SHA1FromFilesDlg");
+		}
+		break;
+
 		case IDM_TOOL_SHA256_GENERATE:
 		{
 			bool isFirstTime = !_sha2FromTextDlg.isCreated();
@@ -3236,7 +3251,27 @@ void Notepad_plus::command(int id)
 		}
 		break;
 
+		case IDM_TOOL_SHA512_GENERATE:
+		{
+			bool isFirstTime = !_sha512FromTextDlg.isCreated();
+			_sha512FromTextDlg.doDialog(_nativeLangSpeaker.isRTL());
+			if (isFirstTime)
+				_nativeLangSpeaker.changeDlgLang(_sha512FromTextDlg.getHSelf(), "SHA512FromTextDlg");
+		}
+		break;
+
+		case IDM_TOOL_SHA512_GENERATEFROMFILE:
+		{
+			bool isFirstTime = !_sha512FromFilesDlg.isCreated();
+			_sha512FromFilesDlg.doDialog(_nativeLangSpeaker.isRTL());
+			if (isFirstTime)
+				_nativeLangSpeaker.changeDlgLang(_sha512FromFilesDlg.getHSelf(), "SHA512FromFilesDlg");
+		}
+		break;
+
+		case IDM_TOOL_SHA1_GENERATEINTOCLIPBOARD:
 		case IDM_TOOL_SHA256_GENERATEINTOCLIPBOARD:
+		case IDM_TOOL_SHA512_GENERATEINTOCLIPBOARD:
 		{
 			if (_pEditView->execute(SCI_GETSELECTIONS) == 1)
 			{
@@ -3250,14 +3285,40 @@ void Notepad_plus::command(int id)
 					char *selectedStr = new char[strSize];
 					_pEditView->execute(SCI_GETSELTEXT, 0, reinterpret_cast<LPARAM>(selectedStr));
 
-					uint8_t sha2hash[32];
-					calc_sha_256(sha2hash, reinterpret_cast<const uint8_t*>(selectedStr), strlen(selectedStr));
+					uint8_t hash[HASH_MAX_LENGTH] {};
+					wchar_t hashStr[HASH_STR_MAX_LENGTH] {};
+					int hashLen = 0;
 
-					wchar_t sha2hashStr[65] = { '\0' };
-					for (size_t i = 0; i < 32; i++)
-						wsprintf(sha2hashStr + i * 2, TEXT("%02x"), sha2hash[i]);
+					switch (id)
+					{
+						case IDM_TOOL_SHA1_GENERATEINTOCLIPBOARD:
+						{
+							calc_sha1(hash, reinterpret_cast<const uint8_t*>(selectedStr), strlen(selectedStr));
+							hashLen = hash_sha1;
+						}
+						break;
 
-					str2Clipboard(sha2hashStr, _pPublicInterface->getHSelf());
+						case IDM_TOOL_SHA256_GENERATEINTOCLIPBOARD:
+						{
+							calc_sha_256(hash, reinterpret_cast<const uint8_t*>(selectedStr), strlen(selectedStr));
+							hashLen = hash_sha256;
+						}
+						break;
+						
+						case IDM_TOOL_SHA512_GENERATEINTOCLIPBOARD:
+						{
+							calc_sha_512(hash, reinterpret_cast<const uint8_t*>(selectedStr), strlen(selectedStr));
+							hashLen = hash_sha512;
+						}
+						break;
+
+						default:
+							return;
+					}
+					for (int i = 0; i < hashLen; i++)
+						wsprintf(hashStr + i * 2, TEXT("%02x"), hash[i]);
+
+					str2Clipboard(hashStr, _pPublicInterface->getHSelf());
 
 					delete[] selectedStr;
 				}

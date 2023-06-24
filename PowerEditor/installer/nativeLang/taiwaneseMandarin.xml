@@ -69,6 +69,7 @@
 					<Item subMenuId="language-userDefinedLanguage" name="自訂程式語法"/>
 					<Item subMenuId="settings-import" name="匯入"/>
 					<Item subMenuId="tools-md5" name="MD5"/>
+					<Item subMenuId="tools-sha1" name="SHA-1"/>
 					<Item subMenuId="tools-sha256" name="SHA-256"/>
 					<Item subMenuId="window-sortby" name="排序方式"/>
 				</SubEntries>
@@ -349,6 +350,12 @@
 					<Item id="48504" name="產生..."/>
 					<Item id="48505" name="從檔案產生..."/>
 					<Item id="48506" name="從選取區產生至剪貼簿"/>
+					<Item id="48507" name="產生..."/>
+					<Item id="48508" name="從檔案產生..."/>
+					<Item id="48509" name="從選取區產生至剪貼簿"/>
+					<Item id="48510" name="產生..."/>
+					<Item id="48511" name="從檔案產生..."/>
+					<Item id="48512" name="從選取區產生至剪貼簿"/>
 					<Item id="49000" name="執行(&amp;R)..."/>
 
 					<Item id="50000" name="函式自動完成"/>
@@ -517,6 +524,30 @@
 				<Item id="1934" name="複製到剪貼簿"/>
 				<Item id="2" name="關閉"/>
 			</SHA256FromTextDlg>
+
+			<SHA1FromFilesDlg title="從檔案產生 SHA-1">
+				<Item id="1922" name="從檔案產生 SHA-1..."/>
+				<Item id="1924" name="複製到剪貼簿"/>
+				<Item id="2" name="關閉"/>
+			</SHA1FromFilesDlg>
+
+			<SHA1FromTextDlg title="產生 SHA-1">
+				<Item id="1932" name="將每一行視為獨立的字串"/>
+				<Item id="1934" name="複製到剪貼簿"/>
+				<Item id="2" name="關閉"/>
+			</SHA1FromTextDlg>
+
+			<SHA512FromFilesDlg title="從檔案產生 SHA-512">
+				<Item id="1922" name="從檔案產生 SHA-512..."/>
+				<Item id="1924" name="複製到剪貼簿"/>
+				<Item id="2" name="關閉"/>
+			</SHA512FromFilesDlg>
+
+			<SHA512FromTextDlg title="產生 SHA-512">
+				<Item id="1932" name="將每一行視為獨立的字串"/>
+				<Item id="1934" name="複製到剪貼簿"/>
+				<Item id="2" name="關閉"/>
+			</SHA512FromTextDlg>
             
 			<PluginsAdminDlg title="外掛模組管理" titleAvailable="可安裝" titleUpdates="更新" titleInstalled="已安裝" titleIncompatible="不相容">
 				<ColumnPlugin name="外掛模組"/>
@@ -986,6 +1017,7 @@
 					<Item id="6411" name="預設程式語言："/>
 					<Item id="6419" name="新文件預設設定"/>
 					<Item id="6420" name="套用至 ANSI 檔案"/>
+					<Item id="6432" name="在啟動時另外打開一個新文件"/>
 				</NewDoc>
 
 				<DefaultDir title="預設資料夾">

@@ -173,7 +173,7 @@ public:
 	bool fileClose(BufferID id = BUFFER_INVALID, int curView = -1);	//use curView to override view to close from
 	bool fileCloseAll(bool doDeleteBackup, bool isSnapshotMode = false);
 	bool fileCloseAllButCurrent();
-	bool fileCloseAllGiven(const std::vector<int>& krvecBufferIndexes);
+	bool fileCloseAllGiven(const std::vector<BufferViewInfo>& krvecBuffer);
 	bool fileCloseAllToLeft();
 	bool fileCloseAllToRight();
 	bool fileCloseAllUnchanged();
@@ -314,6 +314,10 @@ private:
 	HashFromTextDlg _md5FromTextDlg;
 	HashFromFilesDlg _sha2FromFilesDlg;
 	HashFromTextDlg _sha2FromTextDlg;
+	HashFromFilesDlg _sha1FromFilesDlg;
+	HashFromTextDlg _sha1FromTextDlg;
+	HashFromFilesDlg _sha512FromFilesDlg;
+	HashFromTextDlg _sha512FromTextDlg;
     GoToLineDlg _goToLineDlg;
 	ColumnEditorDlg _colEditorDlg;
 	WordStyleDlg _configStyleDlg;

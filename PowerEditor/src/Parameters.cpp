@@ -1809,16 +1809,53 @@ bool NppParameters::isInFontList(const generic_string& fontName2Search) const
 	return false;
 }
 
-HFONT NppParameters::getDefaultUIFont()
+LOGFONT NppParameters::getDefaultGUIFont(DefaultFontType type)
 {
-	static HFONT g_defaultMessageFont = []() {
-		NONCLIENTMETRICS ncm{};
-		ncm.cbSize = sizeof(NONCLIENTMETRICS);
-		SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0);
+	LOGFONT lf{};
+	NONCLIENTMETRICS ncm{};
+	ncm.cbSize = sizeof(NONCLIENTMETRICS);
+	if (::SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0) != FALSE)
+	{
+		switch (type)
+		{
+			case DefaultFontType::menu:
+			{
+				lf = ncm.lfMenuFont;
+				break;
+			}
 
-		return CreateFontIndirect(&ncm.lfMessageFont);
-	}();
-	return g_defaultMessageFont;
+			case DefaultFontType::status:
+			{
+				lf = ncm.lfStatusFont;
+				break;
+			}
+
+			case DefaultFontType::caption:
+			{
+				lf = ncm.lfCaptionFont;
+				break;
+			}
+
+			case DefaultFontType::smcaption:
+			{
+				lf = ncm.lfSmCaptionFont;
+				break;
+			}
+
+			// case DefaultFontType::message:
+			default:
+			{
+				lf = ncm.lfMessageFont;
+				break;
+			}
+		}
+	}
+	else // should not happen, fallback
+	{
+		auto hf = static_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
+		::GetObject(hf, sizeof(LOGFONT), &lf);
+	}
+	return lf;
 }
 
 void NppParameters::getLangKeywordsFromXmlTree()
@@ -3559,6 +3596,10 @@ void NppParameters::writeSession(const Session & session, const TCHAR *fileName)
 				TEXT("The old session file will be restored."),
 				TEXT("Error of saving session file"),
 				MB_OK | MB_APPLMODAL | MB_ICONWARNING);
+
+			wstring sessionPathNameFail2Load = sessionPathName;
+			sessionPathNameFail2Load += L".fail2Load";
+			MoveFileEx(sessionPathName, sessionPathNameFail2Load.c_str(), MOVEFILE_REPLACE_EXISTING);
 			CopyFile(backupPathName, sessionPathName, FALSE);
 		}
 	}
@@ -5220,6 +5261,9 @@ void NppParameters::feedGUIParameters(TiXmlNode *node)
 			if (val)
 				_nppGUI._newDocDefaultSettings._openAnsiAsUtf8 = (lstrcmp(val, TEXT("yes")) == 0);
 
+			val = element->Attribute(TEXT("addNewDocumentOnStartup"));
+			if (val)
+				_nppGUI._newDocDefaultSettings._addNewDocumentOnStartup = (lstrcmp(val, TEXT("yes")) == 0);
 		}
 
 		else if (!lstrcmp(nm, TEXT("langsExcluded")))
@@ -6959,6 +7003,7 @@ void NppParameters::createXmlTreeFromGUIParams()
 		GUIConfigElement->SetAttribute(TEXT("lang"), _nppGUI._newDocDefaultSettings._lang);
 		GUIConfigElement->SetAttribute(TEXT("codepage"), _nppGUI._newDocDefaultSettings._codepage);
 		GUIConfigElement->SetAttribute(TEXT("openAnsiAsUTF8"), _nppGUI._newDocDefaultSettings._openAnsiAsUtf8 ? TEXT("yes") : TEXT("no"));
+		GUIConfigElement->SetAttribute(TEXT("addNewDocumentOnStartup"), _nppGUI._newDocDefaultSettings._addNewDocumentOnStartup ? TEXT("yes") : TEXT("no"));
 	}
 
 	// <GUIConfig name = "langsExcluded" gr0 = "0" gr1 = "0" gr2 = "0" gr3 = "0" gr4 = "0" gr5 = "0" gr6 = "0" gr7 = "0" langMenuCompact = "yes" / >

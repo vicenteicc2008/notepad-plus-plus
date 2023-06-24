@@ -72,6 +72,7 @@ The comments are here for explanation, it's not necessary to translate them.
 					<Item subMenuId="language-userDefinedLanguage" name="Langage utilisateur"/>
 					<Item subMenuId="settings-import" name="Importer"/>
 					<Item subMenuId="tools-md5" name="MD5"/>
+					<Item subMenuId="tools-sha1" name="SHA-1"/>
 					<Item subMenuId="tools-sha256" name="SHA-256"/>
 					<Item subMenuId="window-sortby" name="Trier par"/>
 				</SubEntries>
@@ -360,6 +361,12 @@ The comments are here for explanation, it's not necessary to translate them.
 					<Item id="48504" name="Générer..."/>
 					<Item id="48505" name="Générer depuis les fichiers..."/>
 					<Item id="48506" name="Générer dans le presse-papiers depuis la sélection"/>
+					<Item id="48507" name="Générer..."/>
+					<Item id="48508" name="Générer depuis les fichiers..."/>
+					<Item id="48509" name="Générer dans le presse-papiers depuis la sélection"/>
+					<Item id="48510" name="Générer..."/>
+					<Item id="48511" name="Générer depuis les fichiers..."/>
+					<Item id="48512" name="Générer dans le presse-papiers depuis la sélection"/>
 					<Item id="49000" name="&amp;Exécuter..."/>
 
 					<Item id="50000" name="Complétion de fonction"/>
@@ -541,6 +548,30 @@ The comments are here for explanation, it's not necessary to translate them.
 				<Item id="1934" name="Copier dans le presse-papiers"/>
 				<Item id="2" name="Fermer"/>
 			</SHA256FromTextDlg>
+			
+			<SHA1FromFilesDlg title="Calculer les empreintes de SHA-1 depuis les fichiers">
+				<Item id="1922" name="Choisir les fichiers pour générer les empreintes..."/>
+				<Item id="1924" name="Copier dans le presse-papiers"/>
+				<Item id="2" name="Fermer"/>
+			</SHA1FromFilesDlg>
+
+			<SHA1FromTextDlg title="Calculer l'empreinte de SHA-1">
+				<Item id="1932" name="Traiter chaque ligne comme une chaîne de caractères"/>
+				<Item id="1934" name="Copier dans le presse-papiers"/>
+				<Item id="2" name="Fermer"/>
+			</SHA1FromTextDlg>
+			
+			<SHA512FromFilesDlg title="Calculer les empreintes de SHA-512 depuis les fichiers">
+				<Item id="1922" name="Choisir les fichiers pour générer les empreintes..."/>
+				<Item id="1924" name="Copier dans le presse-papiers"/>
+				<Item id="2" name="Fermer"/>
+			</SHA512FromFilesDlg>
+
+			<SHA512FromTextDlg title="Calculer l'empreinte de SHA-512">
+				<Item id="1932" name="Traiter chaque ligne comme une chaîne de caractères"/>
+				<Item id="1934" name="Copier dans le presse-papiers"/>
+				<Item id="2" name="Fermer"/>
+			</SHA512FromTextDlg>
 
 			<PluginsAdminDlg title="Gestionnaire des modules d'extension" titleAvailable="Disponibles" titleUpdates="Mises à jour" titleInstalled="Installés" titleIncompatible="Incompatibilité">
 				<ColumnPlugin name="Modules d'extension"/>
@@ -1027,6 +1058,7 @@ Vous pouvez définir plusieurs marqueurs de colonne en utilisant un espace pour 
 					<Item id="6411" name="Langage par défaut :"/>
 					<Item id="6419" name="Nouveau document"/>
 					<Item id="6420" name="Appliquer aux fichiers ANSI ouverts"/>
+					<Item id="6432" name="Toujours ouvrir un nouveau document en plus au démarrage"/>
 				</NewDoc>
 
 				<DefaultDir title="Dossier par défaut">

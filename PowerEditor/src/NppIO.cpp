@@ -982,18 +982,15 @@ bool Notepad_plus::fileClose(BufferID id, int curView)
 		bufferID = _pEditView->getCurrentBufferID();
 	Buffer * buf = MainFileManager.getBufferByID(bufferID);
 
-	int res;
-
-	//process the fileNamePath into LRF
-	const TCHAR *fileNamePath = buf->getFullPathName();
-
 	if (buf->isUntitled() && buf->docLength() == 0)
 	{
 		// Do nothing
 	}
 	else if (buf->isDirty())
 	{
-		res = doSaveOrNot(fileNamePath);
+		const TCHAR* fileNamePath = buf->getFullPathName();
+		int res = doSaveOrNot(fileNamePath);
+
 		if (res == IDYES)
 		{
 			if (!fileSave(id)) // the cancel button of savedialog is pressed, aborts closing
@@ -1216,46 +1213,44 @@ bool Notepad_plus::fileCloseAll(bool doDeleteBackup, bool isSnapshotMode)
 	return true;
 }
 
-bool Notepad_plus::fileCloseAllGiven(const std::vector<int>& krvecBufferIndexes)
+bool Notepad_plus::fileCloseAllGiven(const std::vector<BufferViewInfo>& fileInfos)
 {
 	// First check if we need to save any file.
 
 	bool noSaveToAll = false;
 	bool saveToAll = false;
-	std::vector<int> bufferIndexesToClose;
+	std::vector<BufferViewInfo> buffersToClose;
 
 	// Count the number of dirty file
 	size_t nbDirtyFiles = 0;
-	for (const auto& index : krvecBufferIndexes)
+	for (const auto& i : fileInfos)
 	{
-		BufferID id = _pDocTab->getBufferByIndex(index);
-		Buffer* buf = MainFileManager.getBufferByID(id);
+		Buffer* buf = MainFileManager.getBufferByID(i._bufID);
 
 		if (buf->isDirty())
 			++nbDirtyFiles;
 	}
 
-	for (const auto& index : krvecBufferIndexes)
+	for (const auto& i : fileInfos)
 	{
-		BufferID id = _pDocTab->getBufferByIndex(index);
-		Buffer* buf = MainFileManager.getBufferByID(id);
+		Buffer* buf = MainFileManager.getBufferByID(i._bufID);
 
 		if ((buf->isUntitled() && buf->docLength() == 0) || noSaveToAll || !buf->isDirty())
 		{
 			// Do nothing, these documents are already ready to close
-			bufferIndexesToClose.push_back(index);
+			buffersToClose.push_back(i);
 		}
 		else if (buf->isDirty() && !noSaveToAll)
 		{
 			if (_activeView == MAIN_VIEW)
 			{
-				activateBuffer(id, MAIN_VIEW);
-				if (!activateBuffer(id, SUB_VIEW))
+				activateBuffer(i._bufID, MAIN_VIEW);
+				if (!activateBuffer(i._bufID, SUB_VIEW))
 					switchEditViewTo(MAIN_VIEW);
 			}
 			else
 			{
-				activateBuffer(id, SUB_VIEW);
+				activateBuffer(i._bufID, SUB_VIEW);
 				switchEditViewTo(SUB_VIEW);
 			}
 
@@ -1271,17 +1266,17 @@ bool Notepad_plus::fileCloseAllGiven(const std::vector<int>& krvecBufferIndexes)
 
 			if (res == IDYES || res == IDRETRY)
 			{
-				if (!fileSave(id))
+				if (!fileSave(i._bufID))
 					break;	// Abort entire procedure, but close whatever processed so far
 
-				bufferIndexesToClose.push_back(index);
+				buffersToClose.push_back(i);
 
 				if (res == IDRETRY)
 					saveToAll = true;
 			}
 			else if (res == IDNO || res == IDIGNORE)
 			{
-				bufferIndexesToClose.push_back(index);
+				buffersToClose.push_back(i);
 
 				if (res == IDIGNORE)
 					noSaveToAll = true;
@@ -1295,9 +1290,9 @@ bool Notepad_plus::fileCloseAllGiven(const std::vector<int>& krvecBufferIndexes)
 
 	// Now we close.
 	bool isSnapshotMode = NppParameters::getInstance().getNppGUI().isSnapshotMode();
-	for (const auto& index : bufferIndexesToClose)
+	for (const auto& i : buffersToClose)
 	{
-		doClose(_pDocTab->getBufferByIndex(index), currentView(), isSnapshotMode);
+		doClose(i._bufID, i._iView, isSnapshotMode);
 	}
 
 	return true;
@@ -1307,32 +1302,32 @@ bool Notepad_plus::fileCloseAllToLeft()
 {
 	// Indexes must go from high to low to deal with the fact that when one index is closed, any remaining
 	// indexes (smaller than the one just closed) will point to the wrong tab.
-	std::vector<int> vecIndexesToClose;
+	std::vector<BufferViewInfo> bufsToClose;
 	for (int i = _pDocTab->getCurrentTabIndex() - 1; i >= 0; i--)
 	{
-		vecIndexesToClose.push_back(i);
+		bufsToClose.push_back(BufferViewInfo(_pDocTab->getBufferByIndex(i), currentView()));
 	}
-	return fileCloseAllGiven(vecIndexesToClose);
+	return fileCloseAllGiven(bufsToClose);
 }
 
 bool Notepad_plus::fileCloseAllToRight()
 {
 	// Indexes must go from high to low to deal with the fact that when one index is closed, any remaining
 	// indexes (smaller than the one just closed) will point to the wrong tab.
-	const int kiActive = _pDocTab->getCurrentTabIndex();
-	std::vector<int> vecIndexesToClose;
-	for (int i = int(_pDocTab->nbItem()) - 1; i > kiActive; i--)
+	const int iActive = _pDocTab->getCurrentTabIndex();
+	std::vector<BufferViewInfo> bufsToClose;
+	for (int i = int(_pDocTab->nbItem()) - 1; i > iActive; i--)
 	{
-		vecIndexesToClose.push_back(i);
+		bufsToClose.push_back(BufferViewInfo(_pDocTab->getBufferByIndex(i), currentView()));
 	}
-	return fileCloseAllGiven(vecIndexesToClose);
+	return fileCloseAllGiven(bufsToClose);
 }
 
 bool Notepad_plus::fileCloseAllUnchanged()
 {
 	// Indexes must go from high to low to deal with the fact that when one index is closed, any remaining
 	// indexes (smaller than the one just closed) will point to the wrong tab.
-	std::vector<int> vecIndexesToClose;
+	std::vector<BufferViewInfo> bufsToClose;
 
 	for (int i = int(_pDocTab->nbItem()) - 1; i >= 0; i--)
 	{
@@ -1340,11 +1335,11 @@ bool Notepad_plus::fileCloseAllUnchanged()
 		Buffer* buf = MainFileManager.getBufferByID(id);
 		if ((buf->isUntitled() && buf->docLength() == 0) || !buf->isDirty())
 		{
-			vecIndexesToClose.push_back(i);
+			bufsToClose.push_back(BufferViewInfo(_pDocTab->getBufferByIndex(i), currentView()));
 		}
 	}
 
-	return fileCloseAllGiven(vecIndexesToClose);
+	return fileCloseAllGiven(bufsToClose);
 }
 
 bool Notepad_plus::fileCloseAllButCurrent()
@@ -2001,7 +1996,7 @@ void Notepad_plus::fileOpen()
 	size_t sz = fns.size();
 	for (size_t i = 0 ; i < sz ; ++i)
 	{
-		BufferID test = doOpen(fns.at(i).c_str(), false, fDlg.isReadOnly());
+		BufferID test = doOpen(fns.at(i).c_str());
 		if (test != BUFFER_INVALID)
 			lastOpened = test;
 	}
@@ -2141,8 +2136,8 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, bool shou
 		if (lastOpened != BUFFER_INVALID)
 		{
 			showView(MAIN_VIEW);
-			const TCHAR* pLn = nullptr;
-			LangType typeToSet = L_TEXT;
+			const wchar_t* pLn = nullptr;
+			LangType langTypeToSet = L_TEXT;
 			Buffer* buf = MainFileManager.getBufferByID(lastOpened);
 
 			if (!buf->isLargeFile())
@@ -2151,10 +2146,24 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, bool shou
 
 				int id = getLangFromMenuName(pLn);
 				
-				if (id != 0 && id != IDM_LANG_USER)
-					typeToSet = menuID2LangType(id);
-				if (typeToSet == L_EXTERNAL)
-					typeToSet = (LangType)(id - IDM_LANG_EXTERNAL + L_EXTERNAL);
+				if (!id) // it could be due to the hidden language from the sub-menu "Languages"
+				{
+					const NppGUI& nppGUI = nppParam.getNppGUI();
+
+					for (size_t k = 0; k < nppGUI._excludedLangList.size(); ++k) // try to find it in exclude lang list
+					{
+						if (nppGUI._excludedLangList[k]._langName == pLn)
+						{
+							langTypeToSet = nppGUI._excludedLangList[k]._langType;
+							break;
+						}
+					}
+				}
+				else if (id != IDM_LANG_USER)
+					langTypeToSet = menuID2LangType(id);
+
+				if (langTypeToSet == L_EXTERNAL)
+					langTypeToSet = (LangType)(id - IDM_LANG_EXTERNAL + L_EXTERNAL);
 			}
 			
 
@@ -2170,7 +2179,7 @@ bool Notepad_plus::loadSession(Session & session, bool isSnapshotMode, bool shou
 
 			buf->setPosition(session._mainViewFiles[i], &_mainEditView);
 			buf->setMapPosition(session._mainViewFiles[i]._mapPos);
-			buf->setLangType(typeToSet, pLn);
+			buf->setLangType(langTypeToSet, pLn);
 			if (session._mainViewFiles[i]._encoding != -1)
 				buf->setEncoding(session._mainViewFiles[i]._encoding);
 

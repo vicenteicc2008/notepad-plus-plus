@@ -568,7 +568,7 @@ intptr_t CALLBACK GeneralSubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM
 			
 			::SendDlgItemMessage(_hSelf, IDC_CHECK_TAB_HIDE, BM_SETCHECK, tabBarStatus & TAB_HIDE, 0);
 			::SendMessage(_hSelf, WM_COMMAND, IDC_CHECK_TAB_HIDE, 0);
-			::SendDlgItemMessage(_hSelf, IDC_CHECK_SHOWSTATUSBAR, BM_SETCHECK, showStatus, 0);
+			::SendDlgItemMessage(_hSelf, IDC_CHECK_HIDESTATUSBAR, BM_SETCHECK, !showStatus, 0);
 			::SendDlgItemMessage(_hSelf, IDC_CHECK_HIDEMENUBAR, BM_SETCHECK, !showMenu, 0);
 			::SendDlgItemMessage(_hSelf, IDC_CHECK_HIDERIGHTSHORTCUTSOFMENUBAR, BM_SETCHECK, hideRightShortcutsFromMenu, 0);
 
@@ -613,14 +613,14 @@ intptr_t CALLBACK GeneralSubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARAM
 			break;
 		}
 
-		case WM_COMMAND : 
+		case WM_COMMAND:
 		{
 			switch (wParam)
 			{
-				case IDC_CHECK_SHOWSTATUSBAR :
+				case IDC_CHECK_HIDESTATUSBAR:
 				{
-					bool isChecked = (BST_CHECKED == ::SendDlgItemMessage(_hSelf, IDC_CHECK_SHOWSTATUSBAR, BM_GETCHECK, 0, 0));
-					::SendMessage(::GetParent(_hParent), NPPM_HIDESTATUSBAR, 0, isChecked?FALSE:TRUE);
+					const bool isChecked = isCheckedOrNot(IDC_CHECK_HIDESTATUSBAR);
+					::SendMessage(::GetParent(_hParent), NPPM_HIDESTATUSBAR, 0, isChecked ? TRUE : FALSE);
 				}
 				return TRUE;
 
@@ -2347,6 +2347,8 @@ intptr_t CALLBACK NewDocumentSubDlg::run_dlgProc(UINT message, WPARAM wParam, LP
 			}
 			::SendDlgItemMessage(_hSelf, IDC_COMBO_DEFAULTLANG, CB_SETCURSEL, j, 0);
 
+			::SendDlgItemMessage(_hSelf, IDC_CHECK_ADDNEWDOCONSTARTUP, BM_SETCHECK, ndds._addNewDocumentOnStartup, 0);
+
 			return TRUE;
 		}
 
@@ -2435,6 +2437,12 @@ intptr_t CALLBACK NewDocumentSubDlg::run_dlgProc(UINT message, WPARAM wParam, LP
 				case IDC_RADIO_F_WIN:
 				{
 					ndds._format = EolType::windows;
+					return TRUE;
+				}
+
+				case IDC_CHECK_ADDNEWDOCONSTARTUP:
+				{
+					ndds._addNewDocumentOnStartup = isCheckedOrNot(IDC_CHECK_ADDNEWDOCONSTARTUP);
 					return TRUE;
 				}
 
@@ -3244,16 +3252,47 @@ intptr_t CALLBACK LanguageSubDlg::run_dlgProc(UINT message, WPARAM wParam, LPARA
 						HMENU menu = HMENU(::SendMessage(grandParent, NPPM_INTERNAL_GETMENU, 0, 0));
 						HMENU subMenu = ::GetSubMenu(menu, MENUINDEX_LANGUAGE);
 
-						// Add back a languge menu item always before the 3 last items:
-						// 1. -----------------------
-						// 2. Define your language...
-						// 3. User-Defined
+						// Find the first separator which is between IDM_LANG_TEXT and languages
 						int nbItem = ::GetMenuItemCount(subMenu);
+						int x = 0;
+						MENUITEMINFO menuItemInfo
+						{
+							.cbSize = sizeof(MENUITEMINFO),
+							.fMask = MIIM_FTYPE
+						};
+						for (; x < nbItem; ++x)
+						{
+							::GetMenuItemInfo(subMenu, x, TRUE, &menuItemInfo);
+							if (menuItemInfo.fType & MFT_SEPARATOR)
+							{
+								break;
+							}
+						}
 
-						if (nbItem < 3)
-							return FALSE;
+						// Find the location in existing language menu to insert to. This includes submenu if using compact language menu.
+						TCHAR firstLetter = lmi._langName.empty() ? TEXT('\0') : towupper(lmi._langName[0]);
+						TCHAR buffer[MAX_EXTERNAL_LEXER_NAME_LEN]{TEXT('\0')};
+						menuItemInfo.fMask = MIIM_SUBMENU;
+						for (++x; x < nbItem; ++x)
+						{
+							::GetMenuItemInfo(subMenu, x, TRUE, &menuItemInfo);
+							::GetMenuString(subMenu, x, buffer, MAX_EXTERNAL_LEXER_NAME_LEN, MF_BYPOSITION);
 
-						::InsertMenu(subMenu, nbItem - 3, MF_BYPOSITION, lmi._cmdID, lmi._langName.c_str());
+							// Check if using compact language menu.
+							if (menuItemInfo.hSubMenu && buffer[0] == firstLetter)
+							{
+								// Found the submenu for the language's first letter. Search in it instead.
+								subMenu = menuItemInfo.hSubMenu;
+								nbItem = ::GetMenuItemCount(subMenu);
+								x = -1;
+							}
+							else if (lstrcmp(lmi._langName.c_str(), buffer) < 0)
+							{
+								break;
+							}
+						}
+
+						::InsertMenu(subMenu, x, MF_BYPOSITION, lmi._cmdID, lmi._langName.c_str());
 					}
 					::DrawMenuBar(grandParent);
 					return TRUE;

@@ -497,15 +497,26 @@ public:
 	void maintainStateForNpc() {
 		const auto& svp = NppParameters::getInstance().getSVP();
 		const bool isShownNpc = svp._npcShow;
-		const bool isNpcIncCcUniEol = svp._npcIncludeCcUniEol;
 		const bool isShownCcUniEol = svp._ccUniEolShow;
 
-		if (isShownNpc || isNpcIncCcUniEol)
+		if (isShownNpc && isShownCcUniEol)
 		{
-			showNpc(isShownNpc);
-		}
+			showNpc(true);
+			showCcUniEol(true);
 
-		showCcUniEol(isShownCcUniEol);
+			if (svp._eolMode != svp.roundedRectangleText)
+			{
+				setCRLF();
+			}
+		}
+		else if (!isShownNpc && isShownCcUniEol)
+		{
+			showNpc(false);
+		}
+		else
+		{
+			showCcUniEol(false);
+		}
 	}
 
 	void showCcUniEol(bool willBeShowed = true, bool isSearchResult = false);
@@ -909,7 +920,10 @@ protected:
 	};
 
 	void setAsmLexer(){
-		setLexer(L_ASM, LIST_0 | LIST_1 | LIST_2 | LIST_3 | LIST_4 | LIST_5);
+		setLexer(L_ASM, LIST_0 | LIST_1 | LIST_2 | LIST_3 | LIST_4 | LIST_5 | LIST_6 | LIST_7);
+		execute(SCI_SETPROPERTY, reinterpret_cast<WPARAM>("fold.asm.syntax.based"), reinterpret_cast<LPARAM>("1"));
+		execute(SCI_SETPROPERTY, reinterpret_cast<WPARAM>("fold.asm.comment.multiline"), reinterpret_cast<LPARAM>("1"));
+		execute(SCI_SETPROPERTY, reinterpret_cast<WPARAM>("fold.asm.comment.explicit"), reinterpret_cast<LPARAM>("1"));
 	};
 
 	void setDiffLexer(){
@@ -1132,7 +1146,6 @@ protected:
 			case L_BATCH:
 			case L_TEXT:
 			case L_MAKEFILE:
-			case L_ASM:
 			case L_HASKELL:
 			case L_SMALLTALK:
 			case L_KIX:
